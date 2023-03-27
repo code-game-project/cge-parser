@@ -1,0 +1,8 @@
+syntax = "proto3";
+package cgeparser;
+
+option go_package = "./protobuf/schema";
+
+message Metadata {
+	string cge_version = 1;
+}
