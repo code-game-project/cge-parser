@@ -230,8 +230,8 @@ func (s *scanner) addToken(tokenType TokenType) {
 func (s *scanner) addTokenWithPos(tokenType TokenType, line, column int) {
 	lexeme := string(s.tokenRunes)
 	s.tokenBuffer.push(Token{
-		Line:   line + 1,
-		Column: column + 1,
+		Line:   line,
+		Column: column,
 		Type:   tokenType,
 		Lexeme: lexeme,
 	})
@@ -246,8 +246,8 @@ func (s *scanner) newLine() {
 
 func (s *scanner) newError(message string) {
 	s.tokenBuffer.push(Token{
-		Line:   s.line + 1,
-		Column: s.column + 1,
+		Line:   s.line,
+		Column: s.column,
 		Type:   TTError,
 		Lexeme: message,
 	})

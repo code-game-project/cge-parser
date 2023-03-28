@@ -20,6 +20,55 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Diagnostic_Type int32
+
+const (
+	Diagnostic_INFO    Diagnostic_Type = 0
+	Diagnostic_WARNING Diagnostic_Type = 1
+	Diagnostic_ERROR   Diagnostic_Type = 2
+)
+
+// Enum value maps for Diagnostic_Type.
+var (
+	Diagnostic_Type_name = map[int32]string{
+		0: "INFO",
+		1: "WARNING",
+		2: "ERROR",
+	}
+	Diagnostic_Type_value = map[string]int32{
+		"INFO":    0,
+		"WARNING": 1,
+		"ERROR":   2,
+	}
+)
+
+func (x Diagnostic_Type) Enum() *Diagnostic_Type {
+	p := new(Diagnostic_Type)
+	*p = x
+	return p
+}
+
+func (x Diagnostic_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Diagnostic_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_schema_proto_enumTypes[0].Descriptor()
+}
+
+func (Diagnostic_Type) Type() protoreflect.EnumType {
+	return &file_schema_proto_enumTypes[0]
+}
+
+func (x Diagnostic_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Diagnostic_Type.Descriptor instead.
+func (Diagnostic_Type) EnumDescriptor() ([]byte, []int) {
+	return file_schema_proto_rawDescGZIP(), []int{1, 0}
+}
+
 type Metadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -67,6 +116,197 @@ func (x *Metadata) GetCgeVersion() string {
 	return ""
 }
 
+type Diagnostic struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Type Diagnostic_Type `protobuf:"varint,1,opt,name=type,proto3,enum=cgeparser.Diagnostic_Type" json:"type,omitempty"`
+	Msg  string          `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	// inclusive
+	Start *Pos `protobuf:"bytes,3,opt,name=start,proto3" json:"start,omitempty"`
+	// exclusive
+	End *Pos `protobuf:"bytes,4,opt,name=end,proto3" json:"end,omitempty"`
+}
+
+func (x *Diagnostic) Reset() {
+	*x = Diagnostic{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_schema_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Diagnostic) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Diagnostic) ProtoMessage() {}
+
+func (x *Diagnostic) ProtoReflect() protoreflect.Message {
+	mi := &file_schema_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Diagnostic.ProtoReflect.Descriptor instead.
+func (*Diagnostic) Descriptor() ([]byte, []int) {
+	return file_schema_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Diagnostic) GetType() Diagnostic_Type {
+	if x != nil {
+		return x.Type
+	}
+	return Diagnostic_INFO
+}
+
+func (x *Diagnostic) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+func (x *Diagnostic) GetStart() *Pos {
+	if x != nil {
+		return x.Start
+	}
+	return nil
+}
+
+func (x *Diagnostic) GetEnd() *Pos {
+	if x != nil {
+		return x.End
+	}
+	return nil
+}
+
+type Token struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Type   string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	Lexeme string `protobuf:"bytes,2,opt,name=lexeme,proto3" json:"lexeme,omitempty"`
+	Pos    *Pos   `protobuf:"bytes,3,opt,name=pos,proto3" json:"pos,omitempty"`
+}
+
+func (x *Token) Reset() {
+	*x = Token{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_schema_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Token) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Token) ProtoMessage() {}
+
+func (x *Token) ProtoReflect() protoreflect.Message {
+	mi := &file_schema_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Token.ProtoReflect.Descriptor instead.
+func (*Token) Descriptor() ([]byte, []int) {
+	return file_schema_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Token) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *Token) GetLexeme() string {
+	if x != nil {
+		return x.Lexeme
+	}
+	return ""
+}
+
+func (x *Token) GetPos() *Pos {
+	if x != nil {
+		return x.Pos
+	}
+	return nil
+}
+
+type Pos struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Line   int32 `protobuf:"varint,1,opt,name=line,proto3" json:"line,omitempty"`
+	Column int32 `protobuf:"varint,2,opt,name=column,proto3" json:"column,omitempty"`
+}
+
+func (x *Pos) Reset() {
+	*x = Pos{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_schema_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Pos) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Pos) ProtoMessage() {}
+
+func (x *Pos) ProtoReflect() protoreflect.Message {
+	mi := &file_schema_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Pos.ProtoReflect.Descriptor instead.
+func (*Pos) Descriptor() ([]byte, []int) {
+	return file_schema_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Pos) GetLine() int32 {
+	if x != nil {
+		return x.Line
+	}
+	return 0
+}
+
+func (x *Pos) GetColumn() int32 {
+	if x != nil {
+		return x.Column
+	}
+	return 0
+}
+
 var File_schema_proto protoreflect.FileDescriptor
 
 var file_schema_proto_rawDesc = []byte{
@@ -74,9 +314,29 @@ var file_schema_proto_rawDesc = []byte{
 	0x63, 0x67, 0x65, 0x70, 0x61, 0x72, 0x73, 0x65, 0x72, 0x22, 0x2b, 0x0a, 0x08, 0x4d, 0x65, 0x74,
 	0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x67, 0x65, 0x5f, 0x76, 0x65, 0x72,
 	0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x67, 0x65, 0x56,
-	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x13, 0x5a, 0x11, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0xc0, 0x01, 0x0a, 0x0a, 0x44, 0x69, 0x61, 0x67, 0x6e,
+	0x6f, 0x73, 0x74, 0x69, 0x63, 0x12, 0x2e, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x1a, 0x2e, 0x63, 0x67, 0x65, 0x70, 0x61, 0x72, 0x73, 0x65, 0x72, 0x2e,
+	0x44, 0x69, 0x61, 0x67, 0x6e, 0x6f, 0x73, 0x74, 0x69, 0x63, 0x2e, 0x54, 0x79, 0x70, 0x65, 0x52,
+	0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x6d, 0x73, 0x67, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x12, 0x24, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x72, 0x74,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x63, 0x67, 0x65, 0x70, 0x61, 0x72, 0x73,
+	0x65, 0x72, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x05, 0x73, 0x74, 0x61, 0x72, 0x74, 0x12, 0x20, 0x0a,
+	0x03, 0x65, 0x6e, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x63, 0x67, 0x65,
+	0x70, 0x61, 0x72, 0x73, 0x65, 0x72, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x03, 0x65, 0x6e, 0x64, 0x22,
+	0x28, 0x0a, 0x04, 0x54, 0x79, 0x70, 0x65, 0x12, 0x08, 0x0a, 0x04, 0x49, 0x4e, 0x46, 0x4f, 0x10,
+	0x00, 0x12, 0x0b, 0x0a, 0x07, 0x57, 0x41, 0x52, 0x4e, 0x49, 0x4e, 0x47, 0x10, 0x01, 0x12, 0x09,
+	0x0a, 0x05, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x10, 0x02, 0x22, 0x55, 0x0a, 0x05, 0x54, 0x6f, 0x6b,
+	0x65, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x6c, 0x65, 0x78, 0x65, 0x6d, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x6c, 0x65, 0x78, 0x65, 0x6d, 0x65, 0x12, 0x20,
+	0x0a, 0x03, 0x70, 0x6f, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x63, 0x67,
+	0x65, 0x70, 0x61, 0x72, 0x73, 0x65, 0x72, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x03, 0x70, 0x6f, 0x73,
+	0x22, 0x31, 0x0a, 0x03, 0x50, 0x6f, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x69, 0x6e, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x6c, 0x69, 0x6e, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x63,
+	0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x63, 0x6f, 0x6c,
+	0x75, 0x6d, 0x6e, 0x42, 0x13, 0x5a, 0x11, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -91,16 +351,25 @@ func file_schema_proto_rawDescGZIP() []byte {
 	return file_schema_proto_rawDescData
 }
 
-var file_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_schema_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_schema_proto_goTypes = []interface{}{
-	(*Metadata)(nil), // 0: cgeparser.Metadata
+	(Diagnostic_Type)(0), // 0: cgeparser.Diagnostic.Type
+	(*Metadata)(nil),     // 1: cgeparser.Metadata
+	(*Diagnostic)(nil),   // 2: cgeparser.Diagnostic
+	(*Token)(nil),        // 3: cgeparser.Token
+	(*Pos)(nil),          // 4: cgeparser.Pos
 }
 var file_schema_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: cgeparser.Diagnostic.type:type_name -> cgeparser.Diagnostic.Type
+	4, // 1: cgeparser.Diagnostic.start:type_name -> cgeparser.Pos
+	4, // 2: cgeparser.Diagnostic.end:type_name -> cgeparser.Pos
+	4, // 3: cgeparser.Token.pos:type_name -> cgeparser.Pos
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_schema_proto_init() }
@@ -121,19 +390,56 @@ func file_schema_proto_init() {
 				return nil
 			}
 		}
+		file_schema_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Diagnostic); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_schema_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Token); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_schema_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Pos); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_schema_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      1,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_schema_proto_goTypes,
 		DependencyIndexes: file_schema_proto_depIdxs,
+		EnumInfos:         file_schema_proto_enumTypes,
 		MessageInfos:      file_schema_proto_msgTypes,
 	}.Build()
 	File_schema_proto = out.File

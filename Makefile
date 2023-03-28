@@ -1,10 +1,15 @@
-build:
+.PHONY: build protobuf run test clean
+
+build: protobuf
 	CGO_ENABLED=0 go build -o ./bin/cge-parser
 
-run:
+protobuf:
+	protoc -I=protobuf/ --go_out=. protobuf/schema.proto
+
+run: protobuf
 	go run .
 
-test:
+test: protobuf
 	go test ./...
  
 clean:

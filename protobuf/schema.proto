@@ -6,3 +6,31 @@ option go_package = "./protobuf/schema";
 message Metadata {
 	string cge_version = 1;
 }
+
+message Diagnostic {
+	enum Type {
+		INFO = 0;
+		WARNING = 1;
+		ERROR = 2;
+	}
+
+	Type type = 1;
+
+	string msg = 2;
+
+	// inclusive
+	Pos start = 3;
+	// exclusive
+	Pos end = 4;
+}
+
+message Token {
+	string type = 1;
+	string lexeme = 2;
+	Pos pos = 3;
+}
+
+message Pos {
+	int32 line = 1;
+	int32 column = 2;
+}
