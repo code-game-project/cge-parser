@@ -14,16 +14,16 @@ func run() error {
 	comments := pflag.Bool("comments", false, "include doc comments in output")
 	onlyMeta := pflag.Bool("only-meta", false, "stop parsing after sending the metadata message")
 	tokens := pflag.Bool("tokens", false, "return all parsed tokens")
-	ast := pflag.Bool("ast", false, "return the complete AST")
 	noObjects := pflag.Bool("no-objects", false, "do not return objects")
+	noWarn := pflag.Bool("no-warn", false, "disable warnings")
 	pflag.Parse()
 
 	return parser.Parse(os.Stdin, protobuf.NewSender(os.Stdout), parser.Config{
 		IncludeComments: *comments,
 		OnlyMetadata:    *onlyMeta,
 		SendTokens:      *tokens,
-		SendAST:         *ast,
 		NoObjects:       *noObjects,
+		DisableWarnings: *noWarn,
 	})
 }
 

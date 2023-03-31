@@ -14,8 +14,8 @@ A parser for the [CodeGame Events Language](https://code-game.org/docs/specifica
 - `--comments`: include doc comments in output
 - `--only-meta`: stop parsing after sending the metadata message
 - `--tokens`: return all parsed tokens
-- `--ast`: return the complete AST
 - `--no-objects`: do not return objects
+- `--no-warn`: disable warnings
 
 ### Output messages
 
@@ -28,10 +28,6 @@ Once metadata like the CGE version and the name of the game could be determined,
 #### Token
 
 *Will only be sent, if the `--tokens` flag is present.*
-
-#### AST
-
-*Will only be sent, if the `--ast` flag is present.*
 
 #### Error
 

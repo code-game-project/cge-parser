@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"unicode"
 	"unicode/utf8"
 )
@@ -201,8 +200,7 @@ func (s *scanner) nextChar() rune {
 	for {
 		if !s.input.Scan() {
 			if err := s.input.Err(); err != nil {
-				fmt.Fprintf(os.Stderr, "failed to read input data: %s", err)
-				os.Exit(1)
+				panic(fmt.Errorf("failed to read input data: %w", err))
 			}
 			s.nextRune = '\000'
 			return current

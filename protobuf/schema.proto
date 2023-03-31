@@ -8,6 +8,7 @@ message msg_type {
 		METADATA = 0;
 		DIAGNOSTIC = 1;
 		TOKEN = 2;
+		OBJECT = 3;
 	}
 	Type type = 1;
 }
@@ -34,7 +35,42 @@ message Diagnostic {
 }
 
 message Token {
-	string type = 1;
+	enum Type {
+		TTGameName = 0;
+		TTCGEVersion = 1;
+
+		TTConfig = 2;
+		TTCommand = 3;
+		TTEvent = 4;
+		TTType = 5;
+		TTEnum = 6;
+
+		TTString = 7;
+		TTBool = 8;
+		TTInt32 = 9;
+		TTInt64 = 10;
+		TTFloat32 = 11;
+		TTFloat64 = 12;
+
+		TTMap = 13;
+		TTList = 14;
+
+		TTIdentifier = 15;
+		TTVersionNumber = 16;
+
+		TTOpenCurly = 17;
+		TTCloseCurly = 18;
+		TTColon = 19;
+		TTComma = 20;
+		TTGreater = 21;
+		TTLess = 22;
+
+		TTComment = 23;
+
+		TTError = 24;
+		TTEOF = 25;
+	}
+	Type type = 1;
 	string lexeme = 2;
 	Pos pos = 3;
 }
@@ -42,4 +78,42 @@ message Token {
 message Pos {
 	int32 line = 1;
 	int32 column = 2;
+}
+
+message Object {
+	enum Type {
+		CONFIG = 0;
+		COMMAND = 1;
+		EVENT = 2;
+		TYPE = 3;
+		ENUM = 4;
+	}
+	Type type = 1;
+	string name = 2;
+	repeated Property properties = 3;
+	optional string comment = 4;
+}
+
+message Property {
+	message Type {
+		enum DataType {
+			STRING = 0;
+			BOOL = 1;
+			INT32 = 2;
+			INT64 = 3;
+			FLOAT32 = 4;
+			FLOAT64 = 5;
+			MAP = 6;
+			LIST = 7;
+
+			ENUM_VALUE = 8;
+			CUSTOM = 9;
+		}
+		string name = 1;
+		DataType type = 2;
+		Type generic = 3;
+	}
+	string name = 1;
+	Type type = 2;
+	optional string comment = 3;
 }
