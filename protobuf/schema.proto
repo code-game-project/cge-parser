@@ -3,6 +3,15 @@ package cgeparser;
 
 option go_package = "./protobuf/schema";
 
+message msg_type {
+	enum Type {
+		METADATA = 0;
+		DIAGNOSTIC = 1;
+		TOKEN = 2;
+	}
+	Type type = 1;
+}
+
 message Metadata {
 	string cge_version = 1;
 }

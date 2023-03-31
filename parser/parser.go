@@ -96,11 +96,17 @@ func (p *parser) metadata() error {
 	if version.Lexeme == "" {
 		return p.error(p.peek(0), "missing required 'cge' metadata field", false)
 	}
+
+	err := p.out.SendMetadata(version.Lexeme)
+	if err != nil {
+		return err
+	}
+
 	if !p.config.OnlyMetadata && !isVersionCompatible(version.Lexeme, cge.CGEVersion) {
 		return p.error(version, fmt.Sprintf("incompatible CGE version (file: %s, parser: %s)", version.Lexeme, cge.CGEVersion), false)
 	}
 
-	return p.out.SendMetadata(version.Lexeme)
+	return nil
 }
 
 func (p *parser) advance() Token {

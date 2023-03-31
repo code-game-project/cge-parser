@@ -12,16 +12,20 @@ import (
 )
 
 type ProtobufSender struct {
-	out io.Writer
+	out     io.Writer
+	lastMsg schema.MsgType_Type
 }
 
 func NewSender(out io.Writer) *ProtobufSender {
 	return &ProtobufSender{
-		out: out,
+		out:     out,
+		lastMsg: -1,
 	}
 }
 
 func (p *ProtobufSender) SendMetadata(cgeVersion string) error {
+	p.setMsgType(schema.MsgType_METADATA)
+
 	data, err := proto.Marshal(&schema.Metadata{
 		CgeVersion: cgeVersion,
 	})
@@ -38,6 +42,7 @@ func (p *ProtobufSender) SendMetadata(cgeVersion string) error {
 }
 
 func (p *ProtobufSender) SendDiagnostic(diagnosticType parser.DiagnosticType, message string, startLine, startColumn, endLine, endColumn int) error {
+	p.setMsgType(schema.MsgType_DIAGNOSTIC)
 	data, err := proto.Marshal(&schema.Diagnostic{
 		Type: schema.Diagnostic_Type(diagnosticType),
 		Msg:  message,
@@ -63,6 +68,7 @@ func (p *ProtobufSender) SendDiagnostic(diagnosticType parser.DiagnosticType, me
 }
 
 func (p *ProtobufSender) SendToken(tokenType parser.TokenType, lexeme string, line, column int) {
+	p.setMsgType(schema.MsgType_TOKEN)
 	data, err := proto.Marshal(&schema.Token{
 		Type:   string(tokenType),
 		Lexeme: lexeme,
@@ -79,6 +85,26 @@ func (p *ProtobufSender) SendToken(tokenType parser.TokenType, lexeme string, li
 	_, err = p.out.Write(data)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to write token message: %s", err)
+		return
+	}
+}
+
+func (p *ProtobufSender) setMsgType(msgType schema.MsgType_Type) {
+	if p.lastMsg == msgType {
+		return
+	}
+	p.lastMsg = msgType
+	data, err := proto.Marshal(&schema.MsgType{
+		Type: msgType,
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to encode protobuf message type: %s", err)
+		return
+	}
+
+	_, err = p.out.Write(data)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to write protobuf message type: %s", err)
 		return
 	}
 }
