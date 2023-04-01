@@ -7,7 +7,7 @@ A parser for the [CodeGame Events Language](https://code-game.org/docs/specifica
 
 *cge-parser* is not meant to be used as a standalone program.
 
-*cg-parser* receives the CGE file over STDIN and sends its output as [protobuf](https://protobuf.dev/) messages over STDOUT.
+*cge-parser* receives the CGE file over STDIN and sends its output as [protobuf](https://protobuf.dev/) messages over STDOUT.
 
 ### Flags
 
@@ -19,20 +19,7 @@ A parser for the [CodeGame Events Language](https://code-game.org/docs/specifica
 
 ### Output messages
 
-#### Metadata
-
-Once metadata like the CGE version and the name of the game could be determined, they are sent as a metadata message.
-
-#### Object
-
-#### Token
-
-*Will only be sent, if the `--tokens` flag is present.*
-
-#### Error
-
-An error message is sent when the CGE file could not be successfully parsed.
-
+See [schema.proto](./protobuf/schema.proto).
 
 ## License
 
