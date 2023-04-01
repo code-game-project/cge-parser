@@ -9,6 +9,8 @@ A parser for the [CodeGame Events Language](https://code-game.org/docs/specifica
 
 *cge-parser* receives the CGE file over STDIN and sends its output as [protobuf](https://protobuf.dev/) messages over STDOUT.
 
+Use the [adapter](./adapter) library to interface with a *cge-parser* executable.
+
 ### Flags
 
 - `--comments`: include doc comments in output
