@@ -67,11 +67,11 @@ type PropertyType struct {
 	Generic *PropertyType
 }
 
-func (o Property) String() string {
-	if o.Type == nil {
-		return o.Name
+func (p Property) String() string {
+	if p.Type == nil {
+		return p.Name
 	}
-	return fmt.Sprintf("%s: %s", o.Name, o.Type.Token.Lexeme)
+	return fmt.Sprintf("%s: %s", p.Name, p.Type.Token.Lexeme)
 }
 
 type parser struct {
@@ -109,12 +109,12 @@ func Parse(input io.Reader, output Sender, config Config) error {
 
 func (p *parser) parse() (err error) {
 	defer func() {
-		r := recover()
-		if e, ok := r.(error); ok {
-			err = e
-		} else if r != nil {
-			panic(r)
-		}
+		// r := recover()
+		// if e, ok := r.(error); ok {
+		// err = e
+		// } else if r != nil {
+		// panic(r)
+		// }
 	}()
 
 	err = p.metadata()

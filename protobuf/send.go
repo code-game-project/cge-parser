@@ -5,45 +5,37 @@ import (
 	"io"
 	"os"
 
-	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/encoding/protodelim"
 
 	"github.com/code-game-project/cge-parser/parser"
 	"github.com/code-game-project/cge-parser/protobuf/schema"
 )
 
 type ProtobufSender struct {
-	out     io.Writer
-	lastMsg schema.MsgType_Type
+	out io.Writer
 }
 
 func NewSender(out io.Writer) *ProtobufSender {
 	return &ProtobufSender{
-		out:     out,
-		lastMsg: -1,
+		out: out,
 	}
 }
 
 func (p *ProtobufSender) SendMetadata(cgeVersion string) error {
 	p.setMsgType(schema.MsgType_METADATA)
 
-	data, err := proto.Marshal(&schema.Metadata{
+	_, err := protodelim.MarshalTo(p.out, &schema.Metadata{
 		CgeVersion: cgeVersion,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to encode metadata as protobuf message: %w", err)
+		return fmt.Errorf("failed to send metadata as protobuf message: %w", err)
 	}
-
-	_, err = p.out.Write(data)
-	if err != nil {
-		return fmt.Errorf("failed to write metadata message: %w", err)
-	}
-
 	return nil
 }
 
 func (p *ProtobufSender) SendDiagnostic(diagnosticType parser.DiagnosticType, message string, startLine, startColumn, endLine, endColumn int) error {
 	p.setMsgType(schema.MsgType_DIAGNOSTIC)
-	data, err := proto.Marshal(&schema.Diagnostic{
+	_, err := protodelim.MarshalTo(p.out, &schema.Diagnostic{
 		Type: schema.Diagnostic_Type(diagnosticType),
 		Msg:  message,
 		Start: &schema.Pos{
@@ -56,20 +48,14 @@ func (p *ProtobufSender) SendDiagnostic(diagnosticType parser.DiagnosticType, me
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to encode diagnostic as protobuf message: %w", err)
+		return fmt.Errorf("failed to send diagnostic as protobuf message: %w", err)
 	}
-
-	_, err = p.out.Write(data)
-	if err != nil {
-		return fmt.Errorf("failed to write diagnostic message: %w", err)
-	}
-
 	return nil
 }
 
 func (p *ProtobufSender) SendToken(tokenType parser.TokenType, lexeme string, line, column int) error {
 	p.setMsgType(schema.MsgType_TOKEN)
-	data, err := proto.Marshal(&schema.Token{
+	_, err := protodelim.MarshalTo(p.out, &schema.Token{
 		Type:   schema.Token_Type(tokenType),
 		Lexeme: lexeme,
 		Pos: &schema.Pos{
@@ -79,11 +65,6 @@ func (p *ProtobufSender) SendToken(tokenType parser.TokenType, lexeme string, li
 	})
 	if err != nil {
 		return fmt.Errorf("failed to encode token as protobuf message: %w", err)
-	}
-
-	_, err = p.out.Write(data)
-	if err != nil {
-		return fmt.Errorf("failed to write token message: %w", err)
 	}
 
 	return nil
@@ -111,28 +92,34 @@ func propertyToProtobufProp(isEnum bool, property parser.Property) *schema.Prope
 	if property.Comment != "" {
 		comment = &property.Comment
 	}
+
+	var pType *schema.Property_Type
+	if isEnum {
+		pType = &schema.Property_Type{
+			Type: schema.Property_Type_ENUM_VALUE,
+		}
+	} else {
+		pType = propertyTypeToProtobufPropType(property.Type)
+	}
+
 	return &schema.Property{
 		Name:    property.Name,
-		Type:    propertyTypeToProtobufPropType(isEnum, property.Type),
+		Type:    pType,
 		Comment: comment,
 	}
 }
 
-func propertyTypeToProtobufPropType(isEnum bool, propertyType *parser.PropertyType) *schema.Property_Type {
+func propertyTypeToProtobufPropType(propertyType *parser.PropertyType) *schema.Property_Type {
 	var pType schema.Property_Type_DataType
 	if propertyType.Token.Type == parser.TTIdentifier {
-		if isEnum {
-			pType = schema.Property_Type_ENUM_VALUE
-		} else {
-			pType = schema.Property_Type_CUSTOM
-		}
+		pType = schema.Property_Type_CUSTOM
 	} else {
 		pType = schema.Property_Type_DataType(propertyType.Token.Type - parser.TTString)
 	}
 
 	var generic *schema.Property_Type
 	if propertyType.Generic != nil {
-		generic = propertyTypeToProtobufPropType(false, propertyType.Generic)
+		generic = propertyTypeToProtobufPropType(propertyType.Generic)
 	}
 
 	return &schema.Property_Type{
@@ -144,34 +131,19 @@ func propertyTypeToProtobufPropType(isEnum bool, propertyType *parser.PropertyTy
 
 func (p *ProtobufSender) SendObject(object parser.Object) error {
 	p.setMsgType(schema.MsgType_OBJECT)
-	data, err := proto.Marshal(objectToProtobufObj(object))
+	_, err := protodelim.MarshalTo(p.out, objectToProtobufObj(object))
 	if err != nil {
-		return fmt.Errorf("failed to encode object as protobuf message: %w", err)
-	}
-
-	_, err = p.out.Write(data)
-	if err != nil {
-		return fmt.Errorf("failed to write object message: %w", err)
+		return fmt.Errorf("failed to send object as protobuf message: %w", err)
 	}
 	return nil
 }
 
 func (p *ProtobufSender) setMsgType(msgType schema.MsgType_Type) {
-	if p.lastMsg == msgType {
-		return
-	}
-	p.lastMsg = msgType
-	data, err := proto.Marshal(&schema.MsgType{
+	_, err := protodelim.MarshalTo(p.out, &schema.MsgType{
 		Type: msgType,
 	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to encode protobuf message type: %s", err)
-		return
-	}
-
-	_, err = p.out.Write(data)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to write protobuf message type: %s", err)
+		fmt.Fprintf(os.Stderr, "failed to send protobuf message type: %s", err)
 		return
 	}
 }
