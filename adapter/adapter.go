@@ -44,6 +44,9 @@ func ParseMetadata(file io.Reader) (Metadata, io.Reader, []Diagnostic, error) {
 		NoObjects:       true,
 		DisableWarnings: true,
 	})
+	if len(diagnostics) > 0 && err == nil {
+		err = errors.New("parsing error")
+	}
 	return metadata, io.MultiReader(reader.buffer, file), diagnostics, err
 }
 
