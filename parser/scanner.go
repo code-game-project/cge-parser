@@ -92,10 +92,10 @@ func (s *scanner) scanToken() {
 			} else if isDigit(c) {
 				err := s.versionNumber()
 				if err != nil {
-					s.newError(err.Error())
+					s.newErrorAtNext(err.Error())
 				}
 			} else {
-				s.newError(fmt.Sprintf("unexpected character '%c'", c))
+				s.newErrorAtPrev(fmt.Sprintf("unexpected character '%c'", c))
 			}
 		}
 		break
@@ -242,10 +242,20 @@ func (s *scanner) newLine() {
 	s.tokenRunes = s.tokenRunes[:0]
 }
 
-func (s *scanner) newError(message string) {
+func (s *scanner) newErrorAtNext(message string) {
 	s.tokenBuffer.push(Token{
 		Line:   s.line,
 		Column: s.column,
+		Type:   TTError,
+		Lexeme: message,
+	})
+	s.tokenRunes = s.tokenRunes[:0]
+}
+
+func (s *scanner) newErrorAtPrev(message string) {
+	s.tokenBuffer.push(Token{
+		Line:   s.line,
+		Column: s.column - 1,
 		Type:   TTError,
 		Lexeme: message,
 	})
