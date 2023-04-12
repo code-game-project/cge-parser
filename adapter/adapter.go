@@ -13,21 +13,28 @@ import (
 
 // ParseMetadata reads the header of the CGE file and returns the metadata fields and a new io.Reader (even present if err != nil),
 // which still contains the header enabling it to be used for complete parsing.
-func ParseMetadata(file io.Reader) (Metadata, io.Reader, error) {
+func ParseMetadata(file io.Reader) (Metadata, io.Reader, []Diagnostic, error) {
 	reader := newPeekReader(file, 1024)
 
 	var metadata Metadata
-	var err error
+	diagnostics := make([]Diagnostic, 0)
 
-	err2 := parser.Parse(reader, &callbackSender{
+	err := parser.Parse(reader, &callbackSender{
 		CBMetadata: func(cgeVersion string) {
 			metadata = Metadata{
 				CGEVersion: cgeVersion,
 			}
 		},
-		CBDiagnostic: func(diagnosticType parser.DiagnosticType, message string, _, _, _, _ int) {
+		CBDiagnostic: func(diagnosticType parser.DiagnosticType, message string, startLine, startCol, endLine, endCol int) {
 			if diagnosticType == parser.DiagnosticError {
-				err = errors.New(message)
+				diagnostics = append(diagnostics, Diagnostic{
+					Type:        DiagnosticType(diagnosticType),
+					Message:     message,
+					StartLine:   startLine,
+					StartColumn: startCol,
+					EndLine:     endLine,
+					EndColumn:   endCol,
+				})
 			}
 		},
 	}, parser.Config{
@@ -37,11 +44,7 @@ func ParseMetadata(file io.Reader) (Metadata, io.Reader, error) {
 		NoObjects:       true,
 		DisableWarnings: true,
 	})
-	if err2 != nil {
-		return Metadata{}, io.MultiReader(reader.buffer, file), err2
-	}
-
-	return metadata, io.MultiReader(reader.buffer, file), err
+	return metadata, io.MultiReader(reader.buffer, file), diagnostics, err
 }
 
 type Config struct {
