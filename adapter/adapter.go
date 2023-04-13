@@ -76,7 +76,11 @@ func (c Config) toArgs() []string {
 
 type ParserResponse struct {
 	Metadata    Metadata
-	Objects     []Object
+	Config      Object
+	Events      []Object
+	Commands    []Object
+	Types       []Object
+	Enums       []Object
 	Tokens      []Token
 	Diagnostics []Diagnostic
 }

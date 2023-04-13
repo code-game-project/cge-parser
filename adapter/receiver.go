@@ -16,7 +16,7 @@ func receiveProtobufs(input io.Reader, config Config) (ParserResponse, error) {
 
 	objCap := 0
 	if !config.NoObjects {
-		objCap = 32
+		objCap = 8
 	}
 
 	tokenCap := 0
@@ -25,7 +25,10 @@ func receiveProtobufs(input io.Reader, config Config) (ParserResponse, error) {
 	}
 
 	response := ParserResponse{
-		Objects:     make([]Object, 0, objCap),
+		Events:      make([]Object, 0, objCap),
+		Commands:    make([]Object, 0, objCap),
+		Types:       make([]Object, 0, objCap),
+		Enums:       make([]Object, 0, objCap),
 		Tokens:      make([]Token, 0, tokenCap),
 		Diagnostics: make([]Diagnostic, 0),
 	}
@@ -56,7 +59,18 @@ func receiveProtobufs(input io.Reader, config Config) (ParserResponse, error) {
 			object := new(schema.Object)
 			err = protodelim.UnmarshalFrom(in, object)
 			if err == nil {
-				response.Objects = append(response.Objects, objectFromProtobuf(object))
+				switch object.Type {
+				case schema.Object_CONFIG:
+					response.Config = objectFromProtobuf(object)
+				case schema.Object_EVENT:
+					response.Events = append(response.Events, objectFromProtobuf(object))
+				case schema.Object_COMMAND:
+					response.Commands = append(response.Commands, objectFromProtobuf(object))
+				case schema.Object_TYPE:
+					response.Types = append(response.Types, objectFromProtobuf(object))
+				case schema.Object_ENUM:
+					response.Enums = append(response.Enums, objectFromProtobuf(object))
+				}
 			}
 		case schema.MsgType_DIAGNOSTIC:
 			diagnostic := new(schema.Diagnostic)

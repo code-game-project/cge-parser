@@ -185,10 +185,10 @@ func (p *parser) metadata() error {
 			if version.Lexeme != "" {
 				return p.error(p.previous, "duplicate 'cge' metadata field", false)
 			}
+			version = p.previous
 			if !p.match(TTVersionNumber) {
 				return p.error(p.peek(0), "expected version number after 'cge' keyword", false)
 			}
-			version = p.previous
 			if version.Lexeme == "version" {
 				p.warn(version, "the 'version' metadata field is deprecated; use 'cge' instead")
 			}
